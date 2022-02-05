@@ -11,6 +11,7 @@ app.ws('/', function (ws, req) {
   // метод on слушает сообщенние
   ws.on('message', function (msg) {
     console.log(msg);
+    ws.send(msg);
   });
   console.log('socket', req.testing);
 });
