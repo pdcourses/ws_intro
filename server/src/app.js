@@ -4,14 +4,16 @@
 const express = require('express');
 const app = express();
 const expressWs = require('express-ws')(app);
+const gWss = expressWs.getWss('/');
 
 app.use(express.json());
 
 app.ws('/', function (ws, req) {
-  // метод on слушает сообщенние
   ws.on('message', function (msg) {
     console.log(msg);
-    ws.send(msg);
+    gWss.clients.forEach(function (client) {
+      client.send(msg);
+    });
   });
   console.log('socket', req.testing);
 });
