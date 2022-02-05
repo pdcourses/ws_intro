@@ -1,28 +1,21 @@
-//WebSocket нужно написать и на сервере и на клиенте
-// WebSocket - протокол !!
-
+const http = require('http');
 const express = require('express');
+const socketIO = require('socket.io');
+const cors = require('cors');
+
 const app = express();
-const expressWs = require('express-ws')(app);
-const gWss = expressWs.getWss('/');
 
-app.use(express.json());
+const server = http.createServer(app);
+const io = socketIO(server);
 
-const messages = [];
+const connectionWS = require('./ws');
 
-app.ws('/', function (ws, req) {
-  ws.send(JSON.stringify(messages));
+app.use(cors());
 
-  ws.on('message', function (msg) {
-    console.log(msg);
-    messages.push(msg);
+const router = require('./router');
+app.use(router);
 
-    gWss.clients.forEach(function (client) {
-      client.send(JSON.stringify([msg]));
-    });
-  });
-  console.log('socket', req.testing);
-});
+io.on('connection', connectionWS);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
